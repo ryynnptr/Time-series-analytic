@@ -1,0 +1,74 @@
+---
+title: "Analisis deret waktu WWWusage"
+author: "Riyan putra pratama"
+date: "2025-04-19"
+output: pdf_document
+---
+
+LATIHAN 1
+1. Memanggil dataset WWWusage dan menampilkan hasil statistik deskriptifnya
+```{r}
+data(WWWusage)
+summary(WWWusage)
+
+```
+Interpretasi :
+Dataset WWWusage merupakan data bawaan dari R yang merepresentasikan jumlah pengguna koneksi internet per menit. Untuk menampilkan statistik deskriptif menggunakan fungi summary() yang mencakup nilai minimum, maksimum, median, mean, serta kuartil.
+Dari hasil analalisis statistik diatas, dapa dilihat bahwa terdapat variasi yang cukup signifikan dalam jumlah pengguna internet, dengan nilai maksimum yang relatif jauh dari nilai minimum, hal ini mengidikasikan adanya pertumbuhan penggunaan internet dari waktu ke watu
+
+
+
+2. Visualisai deret waktu
+```{r}
+plot(WWWusage, 
+     main = "Plot Deret Waktu Penggunaan Internet", 
+     xlab = "Waktu", 
+     ylab = "Jumlah Pengguna", 
+     col = "red")
+
+```
+Interpretasi :
+Grafik di atas menampilkan jumlah pengguna internet dari waktu ke waktu, secara visual terlihat adanya tren peningkatan, dimana jumlah pengguna internet meningkat seiring berjalannya waktu. Disini pola musimam tidak terlihat jelas karena data ini direkam per menit sehingga kemungkinan besar data ini tidak memiliki komponen musiman yang signifikan. Warna biru pada plot memperjelas fluktuasi nilai dari pengguna internet dari waktu ke waktu.
+
+
+
+
+3. Konversi dataset ke Time series dan dekomposisi dengan metode aditif
+```{r}
+# mengubah dataset ke time series dengan frekuensi 7 (mengansumsikan data mingguan)
+konvers_ts <- ts(WWWusage, frequency = 7)
+
+# Dekomposisi dengan metode aditif
+hasil_dekomposisi <- decompose(konvers_ts, type = "additive")
+
+```
+Interpretasi :
+Pada bagian ini, data WWWusage diubah menjadi objek time series dengan frekuensi 7. Mengapa 7? karena kita akan mengansumsikan data mingguan meskipun sebenernya data ini adalah data per menit. Tujuan dari konversi ini adalah aagar data dapat dianalisis menggunakan metode deret waktu seperti dekomposisi.
+Proses dekomposisi ini dilakukan menggunakan metode aditif, yaitu memisahkan data ke dalam tiga komponen utama, yaitu :
+-Tren
+-Seasonal
+-Random
+Hal ini memungkinan analisis yang lebih mendalam terhadp pola-pola yang tersembunyi dalam data
+
+
+
+
+4. Visualisasi hasil dekomposisi
+```{r}
+plot(hasil_dekomposisi)
+
+```
+Interpretasi :
+Plot diatas adalah visualisi hasil dari dekomposisi yang tediri dari 4 bagian  :
+1. Plot data asli (Observed)
+Bagian paling atas menampilkan grafik deret waktu asli dari jumlah pengguna internet. Bisa dilihat adanya fluktuasi nilai dengan kecenderungan umum mengalami peningkatan seiring waktu. fluktuasi ini tidak seutuh nya acak sehingga perlu dianalisi lebih lanjut melalui teknik dekomposisi
+2. Komponen Tren (Trend)
+Bagian kedua menunjukan pola tren jangka panjang dari data, terlihat adanya tren naik yang cukup jelas yang berarti jumlah pengguna internet mengalami peningkatan dari waktu ke waktu. Ini menunjukan bahwa permintaan atau akses internet terus meningkat bisa karena perluasan internet dan perubahan gaya hidup digital
+3.Komponen musiman (Seasonal)
+Bagian ketiga menunjukan variasi musiman dalam data, dapat dilihat pola musiman tampak sangat kecil yang menunjukan bahwa pola musiman tidak signifikan atau bahkan tidak ada. Hal ini wajar mengingat data WWWusage merekam aktivitas permenit dan bukan berdasarkan siklus mingguan, bulanan, atau tahunan yang umum mengandung pola musiman walaupun data dikonversikan ke time series dengan frekuensi 7, seolah olah ada siklus mingguan. Namun itu hanyalah asumsi dan bukan representasi sebeneranya dari pola mingguan
+4.Komponen acak(Random)
+Bagian terakhir menunjukan sisa data yang tidak dijelaskan oleh komponen tren dan musiman. Fluktuasi acak ini bisa disebabkan oleh faktor-faktor yang tidak teratur atau kejadian tidak terduga seperti gangguna jaringan sementaran atau aktivitas pengguna yang tiba tiba melonjak. Meskipun terlihat ada beberapa lonjakan atau penurunan tajam, secara keseluruhan residual nya terlihat cukup kecil, yang menandakan bahwa model dekomposisi mampu menjelaskan sebagian besar variasi dalam data
+
+
+Kesimpulan :
+Dari hasil dekomposisi ini dapat disimpulkan bahwa data WWWusage didominasi oleh komponen pola tren kenaikan, sementara tidak menunjukan adanya pola musiman yang kuat. Komponen pola random relatif kecil, menandakan bahwa sebagian sebar informasi dalam data dapat dijelaskan oleh tren.
